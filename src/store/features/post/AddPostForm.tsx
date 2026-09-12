@@ -1,6 +1,5 @@
 import { addPost, Post } from "@/store/features/post/postSlice";
 import { useAppDispatch } from "@/store/hooks";
-import { nanoid } from "@reduxjs/toolkit";
 
 export default function AddPostForm() {
   const dispatch = useAppDispatch()
@@ -11,13 +10,12 @@ export default function AddPostForm() {
     e.preventDefault();
 
     const form = new FormData(e.currentTarget);
-    const post: Post = {
-        id: nanoid(),
+    const post: Omit<Post, 'id'> = {
         title: form.get(POST_TITLE) as string, 
         content: form.get(POST_CONTENT) as string,
       }
 
-    dispatch(addPost(post))
+    dispatch(addPost(post.title, post.content))
   }
 
   return <>

@@ -1,5 +1,5 @@
 import { RootState } from "@/store";
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { createSlice, nanoid, PayloadAction } from "@reduxjs/toolkit";
 
 export interface Post {
   id: string;
@@ -16,8 +16,19 @@ const postSlice = createSlice({
   name: 'posts',
   initialState,
   reducers: {
-    addPost: (state, action: PayloadAction<Post>) => {
+    addPost: {
+      // the only two attributes are reducer and prepare
+      reducer: (state, action: PayloadAction<Post>) => {
       state.push(action.payload);
+      },
+      prepare(title: string, content: string) {
+        return {
+          payload: {title, content, id: nanoid()},
+          // meta
+          // error
+          // this two can also be added.
+        }
+      },
     },
     // use names in past tense
     postUpdated: (state, action: PayloadAction<Post>) => {
