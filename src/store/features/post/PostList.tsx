@@ -1,5 +1,6 @@
 import { selectPost } from "@/store/features/post/postSlice";
 import { useAppSelector } from "@/store/hooks";
+import { Link } from "react-router-dom";
 
 export default function PostsList() {
   const posts = useAppSelector(selectPost);
@@ -9,7 +10,9 @@ export default function PostsList() {
       <h2>Post</h2>
       {posts.map(p => <>
         <article key={p.id} className="post-excerpt">
-          <h3>{p.title}</h3>
+          <h3>
+            <Link to={'/post/' + p.id}>{p.title}</Link>
+          </h3>
           <p className="post-content">{p.content}</p>
         </article>
       </>)}
