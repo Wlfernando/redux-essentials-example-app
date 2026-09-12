@@ -1,8 +1,9 @@
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom'
 
 import { Navbar } from './components/Navbar'
-import PostsList from './components/PostList';
-import AddPostForm from './components/AddPostForm';
+import PostsList from './store/features/post/PostList';
+import AddPostForm from './store/features/post/AddPostForm';
+import SinglePostPage from './store/features/post/SinglePostPage';
 
 function App() {
   return (
@@ -19,6 +20,12 @@ function App() {
               </>
             }
           ></Route>
+          <Route
+            path='/post/:postId'
+            element={
+              <SinglePostPage />
+            }
+          />
         </Routes>
       </div>
     </Router>
