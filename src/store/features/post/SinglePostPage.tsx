@@ -1,5 +1,5 @@
 import { useSelector } from "react-redux";
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { selectAPost } from "./postSlice";
 
 export default function SinglePostPage() {
@@ -19,6 +19,7 @@ export default function SinglePostPage() {
       <article className="post">
         <h2>{post.title}</h2>
         <p className="post-content">{post.content}</p>
+        <Link to={'/editPost/' + post.id} className="button">Edit Post</Link>
       </article>
     </section>
   </>

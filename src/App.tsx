@@ -4,6 +4,7 @@ import { Navbar } from './components/Navbar'
 import PostsList from './store/features/post/PostList';
 import AddPostForm from './store/features/post/AddPostForm';
 import SinglePostPage from './store/features/post/SinglePostPage';
+import EditPostForm from './store/features/post/EditPostForm';
 
 function App() {
   return (
@@ -25,6 +26,10 @@ function App() {
             element={
               <SinglePostPage />
             }
+          />
+          <Route
+            path='/editPost/:postId'
+            element={<EditPostForm />}
           />
         </Routes>
       </div>
