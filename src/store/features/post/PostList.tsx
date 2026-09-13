@@ -3,6 +3,7 @@ import { useAppSelector } from "@/store/hooks";
 import { Link } from "react-router-dom";
 import PostAuthor from "./PostAuthor";
 import TimeAgo from "@/components/TimeAgo";
+import ReactionButtons from "./ReactionButtons";
 
 export default function PostsList() {
   const posts = useAppSelector(selectPost);
@@ -19,6 +20,7 @@ export default function PostsList() {
           <p className="post-content">{p.content}</p>
           <PostAuthor userId={p.user} />
           <TimeAgo timestamp={p.date} />
+          <ReactionButtons post={p}/>
         </article>
       ))}
     </section>

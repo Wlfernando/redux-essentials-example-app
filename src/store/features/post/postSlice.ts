@@ -39,7 +39,7 @@ const initialState: Post[] = ([
   content,
   user,
   date: sub(new Date(), { minutes }).toISOString(),
-  reactions: Object.create(reactions),
+  reactions: {...reactions},
 }));
 
 const postSlice = createSlice({
@@ -59,7 +59,7 @@ const postSlice = createSlice({
             id: nanoid(),
             user: userId,
             date: new Date().toISOString(),
-            reactions: Object.create(reactions),
+            reactions: {...reactions},
           },
           // meta
           // error
@@ -76,7 +76,7 @@ const postSlice = createSlice({
     },
     reactionAdded: (state, action: PayloadAction<{ postId: string, reaction: ReactionName }>) => {
       const { postId, reaction } = action.payload;
-      const post = state.find(p => p.user === postId);
+      const post = state.find(p => p.id === postId);
 
       if (post) {
         post.reactions[reaction]++;
@@ -90,4 +90,4 @@ export default postSlice.reducer;
 export const selectPost = (state: RootState) => state.posts;
 export const selectAPost = (id: string | undefined) => (state: RootState) => state.posts.find(post => post.id === id)
 
-export const { addPost, postUpdated } = postSlice.actions;
+export const { addPost, postUpdated, reactionAdded } = postSlice.actions;
