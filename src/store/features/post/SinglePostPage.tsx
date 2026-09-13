@@ -2,6 +2,7 @@ import { useSelector } from "react-redux";
 import { Link, useParams } from "react-router-dom";
 import { selectAPost } from "./postSlice";
 import PostAuthor from "./PostAuthor";
+import TimeAgo from "@/components/TimeAgo";
 
 export default function SinglePostPage() {
   const { postId } = useParams();
@@ -21,6 +22,7 @@ export default function SinglePostPage() {
         <h2>{post.title}</h2>
         <p className="post-content">{post.content}</p>
         <PostAuthor userId={post.user} />
+        <TimeAgo timestamp={post.date} />
         <Link to={'/editPost/' + post.id} className="button">Edit Post</Link>
       </article>
     </section>
