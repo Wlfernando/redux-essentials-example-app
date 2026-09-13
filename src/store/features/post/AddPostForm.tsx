@@ -14,7 +14,7 @@ export default function AddPostForm() {
     e.preventDefault();
 
     const form = new FormData(e.currentTarget);
-    const post: Omit<Post, 'id'> = {
+    const post: Pick<Post, 'title' | 'content' | 'user'> = {
         title: form.get(POST_TITLE) as string, 
         content: form.get(POST_CONTENT) as string,
         user: form.get(POST_AUTOR) as string,

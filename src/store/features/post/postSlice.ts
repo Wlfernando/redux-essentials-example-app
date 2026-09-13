@@ -1,6 +1,7 @@
 import { RootState } from "@/store";
 import { createSlice, nanoid, PayloadAction } from "@reduxjs/toolkit";
 import { sub } from "date-fns";
+import { id } from "date-fns/locale";
 
 export interface Post {
   id: string;
@@ -8,14 +9,38 @@ export interface Post {
   content: string;
   user: string;
   date: string;
+  reactions: {
+    thumbsUp: number;
+    tada: number;
+    heart: number;
+    rocket: number;
+    eyes: number;
+  }
 }
 
 type PostUpdated = Omit<Post, 'user'>
 
-const initialState: Post[] = [
-  { id: '1', title: 'First Post!', content: 'Hello!', user: '0', date: sub(new Date(), { minutes: 10 }).toISOString() },
-  { id: '2', title: 'Second Post', content: 'More text', user: '2', date: sub(new Date(), { minutes: 5 }).toISOString() },
-];
+const reactions = {
+  thumbsUp: 0,
+  tada: 0,
+  heart: 0,
+  rocket: 0,
+  eyes: 0,
+};
+
+export type ReactionName = keyof typeof reactions;
+
+const initialState: Post[] = ([
+  ['1', 'First Post!', 'Hello!', '0', 10],
+  ['2', 'Second Post', 'More Text', '2', 5],
+] as [string, string, string, string, number][]).map(([id, title, content, user, minutes]) => ({
+  id,
+  title,
+  content,
+  user,
+  date: sub(new Date(), { minutes }).toISOString(),
+  reactions: Object.create(reactions),
+}));
 
 const postSlice = createSlice({
   name: 'posts',
@@ -28,7 +53,14 @@ const postSlice = createSlice({
       },
       prepare(title: string, content: string, userId: string) {
         return {
-          payload: {title, content, id: nanoid(), user: userId, date: new Date().toISOString()},
+          payload: {
+            title,
+            content,
+            id: nanoid(),
+            user: userId,
+            date: new Date().toISOString(),
+            reactions: Object.create(reactions),
+          },
           // meta
           // error
           // this two can also be added.
@@ -42,6 +74,14 @@ const postSlice = createSlice({
       if (post)
         Object.assign(post, action.payload)
     },
+    reactionAdded: (state, action: PayloadAction<{ postId: string, reaction: ReactionName }>) => {
+      const { postId, reaction } = action.payload;
+      const post = state.find(p => p.user === postId);
+
+      if (post) {
+        post.reactions[reaction]++;
+      }
+    }
   },
 })
 
