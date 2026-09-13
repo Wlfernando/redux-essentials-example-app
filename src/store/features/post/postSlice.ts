@@ -5,11 +5,14 @@ export interface Post {
   id: string;
   title: string;
   content: string;
+  user: string;
 }
 
+type PostUpdated = Omit<Post, 'user'>
+
 const initialState: Post[] = [
-  { id: '1', title: 'First Post!', content: 'Hello!' },
-  { id: '2', title: 'Second Post', content: 'More text' }
+  { id: '1', title: 'First Post!', content: 'Hello!', user: '0' },
+  { id: '2', title: 'Second Post', content: 'More text', user: '2' },
 ];
 
 const postSlice = createSlice({
@@ -21,9 +24,9 @@ const postSlice = createSlice({
       reducer: (state, action: PayloadAction<Post>) => {
       state.push(action.payload);
       },
-      prepare(title: string, content: string) {
+      prepare(title: string, content: string, userId: string) {
         return {
-          payload: {title, content, id: nanoid()},
+          payload: {title, content, id: nanoid(), user: userId},
           // meta
           // error
           // this two can also be added.
@@ -31,7 +34,7 @@ const postSlice = createSlice({
       },
     },
     // use names in past tense
-    postUpdated: (state, action: PayloadAction<Post>) => {
+    postUpdated: (state, action: PayloadAction<PostUpdated>) => {
       const post = state.find(p => action.payload.id === p.id)
 
       if (post)
