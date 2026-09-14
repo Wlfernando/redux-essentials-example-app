@@ -3,11 +3,14 @@ import { Link, useParams } from "react-router-dom";
 import { selectAPost } from "./postSlice";
 import PostAuthor from "./PostAuthor";
 import TimeAgo from "@/components/TimeAgo";
+import { useAppSelector } from "@/store/hooks";
+import { selectCurrentUser } from "../users/usersSlice";
 
 export default function SinglePostPage() {
   const { postId } = useParams();
 
   const post = useSelector(selectAPost(postId));
+  const currentUser = useAppSelector(selectCurrentUser);
 
   if (!post)
     return <>
@@ -16,6 +19,8 @@ export default function SinglePostPage() {
       </section>
     </>
 
+  const canEdit = currentUser?.id === post.user
+
   return <>
     <section>
       <article className="post">
@@ -23,7 +28,7 @@ export default function SinglePostPage() {
         <p className="post-content">{post.content}</p>
         <PostAuthor userId={post.user} />
         <TimeAgo timestamp={post.date} />
-        <Link to={'/editPost/' + post.id} className="button">Edit Post</Link>
+        { canEdit && <Link to={'/editPost/' + post.id} className="button">Edit Post</Link> }
       </article>
     </section>
   </>
