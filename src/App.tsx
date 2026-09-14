@@ -5,6 +5,7 @@ import PostsList from './store/features/post/PostList';
 import AddPostForm from './store/features/post/AddPostForm';
 import SinglePostPage from './store/features/post/SinglePostPage';
 import EditPostForm from './store/features/post/EditPostForm';
+import LoginPage from './store/features/auth/LoginPage';
 
 function App() {
   return (
@@ -13,7 +14,12 @@ function App() {
       <div className="App">
         <Routes>
           <Route
-            path="/"
+            path='/'
+            element={<LoginPage/>}
+          >
+          </Route>
+          <Route
+            path="/posts"
             element={
               <>
                 <AddPostForm />
