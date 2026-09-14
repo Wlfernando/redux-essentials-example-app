@@ -38,11 +38,19 @@ interface PostState {
   error: string | null;
 };
 
-const fetchPosts = createAsyncThunk(
+export const fetchPosts = createAsyncThunk(
   'posts/fetchPosts',
   async () => {
     const res = await client.get<Post[]>('/fakeApi/posts');
     return res.data;
+  },
+  {
+    condition(arg, thunkApi) {
+      const postsStatus = selectPostsStatus(thunkApi.getState() as RootState)
+
+      if (postsStatus !== 'idle')
+        return false;
+    }
   }
 )
 
@@ -116,5 +124,6 @@ export default postSlice.reducer;
 
 export const selectPost = (state: RootState) => state.posts.posts;
 export const selectAPost = (id: string | undefined) => (state: RootState) => state.posts.posts.find(post => post.id === id)
+export const selectPostsStatus = (state: RootState) => state.posts.status;
 
 export const { addPost, postUpdated, reactionAdded } = postSlice.actions;

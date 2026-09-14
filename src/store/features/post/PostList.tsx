@@ -1,13 +1,22 @@
-import { selectPost } from "@/store/features/post/postSlice";
-import { useAppSelector } from "@/store/hooks";
+import { fetchPosts, selectPost, selectPostsStatus } from "@/store/features/post/postSlice";
+import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { Link } from "react-router-dom";
 import PostAuthor from "./PostAuthor";
 import TimeAgo from "@/components/TimeAgo";
 import ReactionButtons from "./ReactionButtons";
+import { useEffect } from "react";
 
 export default function PostsList() {
   const posts = useAppSelector(selectPost);
+  const status = useAppSelector(selectPostsStatus);
+  const dispatch = useAppDispatch();
+
   const reversePosts = posts.toSorted((a, b) => b.date.localeCompare(a.date))
+
+  useEffect(() => {
+    if (status === 'idle')
+      dispatch(fetchPosts())
+  }, [status, dispatch])
 
   return <>
     <section className="posts-list">
