@@ -6,6 +6,7 @@ import AddPostForm from './store/features/post/AddPostForm';
 import SinglePostPage from './store/features/post/SinglePostPage';
 import EditPostForm from './store/features/post/EditPostForm';
 import LoginPage from './store/features/auth/LoginPage';
+import ProtectedRoute from './store/features/auth/ProtectedRoute';
 
 function App() {
   return (
@@ -19,23 +20,28 @@ function App() {
           >
           </Route>
           <Route
-            path="/posts"
+            path='/*'
             element={
-              <>
-                <AddPostForm />
-                <PostsList />
-              </>
+              <ProtectedRoute>
+                <Routes>
+                  <Route
+                    path="/posts"
+                    element={<>
+                      <AddPostForm />
+                      <PostsList />
+                    </>}
+                  ></Route>
+                  <Route
+                    path='/post/:postId'
+                    element={<SinglePostPage />}
+                  />
+                  <Route
+                    path='/editPost/:postId'
+                    element={<EditPostForm />}
+                  />
+                </Routes>
+              </ProtectedRoute>
             }
-          ></Route>
-          <Route
-            path='/post/:postId'
-            element={
-              <SinglePostPage />
-            }
-          />
-          <Route
-            path='/editPost/:postId'
-            element={<EditPostForm />}
           />
         </Routes>
       </div>
