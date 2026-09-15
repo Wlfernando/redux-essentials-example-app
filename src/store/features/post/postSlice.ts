@@ -1,5 +1,5 @@
 import { RootState } from "@/store";
-import { createAsyncThunk, createSlice, nanoid, PayloadAction } from "@reduxjs/toolkit";
+import { asyncThunkCreator, buildCreateSlice, createAsyncThunk, createSlice, nanoid, PayloadAction } from "@reduxjs/toolkit";
 import { sub } from "date-fns";
 import { id } from "date-fns/locale";
 import { userLoggedOut } from "../auth/authSlice";
@@ -38,21 +38,22 @@ interface PostState {
   error: string | null;
 };
 
-export const fetchPosts = createAsyncThunk(
-  'posts/fetchPosts',
-  async () => {
-    const res = await client.get<Post[]>('/fakeApi/posts');
-    return res.data;
-  },
-  {
-    condition(arg, thunkApi) {
-      const postsStatus = selectPostsStatus(thunkApi.getState() as RootState)
+// this is going to be include in the createSlice
+// export const fetchPosts = createAsyncThunk(
+//   'posts/fetchPosts',
+//   async () => {
+//     const res = await client.get<Post[]>('/fakeApi/posts');
+//     return res.data;
+//   },
+//   {
+//     condition(arg, thunkApi) {
+//       const postsStatus = selectPostsStatus(thunkApi.getState() as RootState)
 
-      if (postsStatus !== 'idle')
-        return false;
-    }
-  }
-)
+//       if (postsStatus !== 'idle')
+//         return false;
+//     }
+//   }
+// )
 
 const initialState: PostState = {
   posts: [],
@@ -60,64 +61,143 @@ const initialState: PostState = {
   error: null,
 };
 
-const postSlice = createSlice({
-  name: 'posts',
+// Another syntaxis for reducers
+// const postSlice = createSlice({
+//   name: 'posts',
+//   initialState,
+//   reducers: {
+//     addPost: {
+//       // the only two attributes are reducer and prepare
+//       reducer: (state, action: PayloadAction<Post>) => {
+//       state.posts.push(action.payload);
+//       },
+//       prepare(title: string, content: string, userId: string) {
+//         return {
+//           payload: {
+//             title,
+//             content,
+//             id: nanoid(),
+//             user: userId,
+//             date: new Date().toISOString(),
+//             reactions: {...reactions},
+//           },
+//           // meta
+//           // error
+//           // this two can also be added.
+//         }
+//       },
+//     },
+//     // use names in past tense
+//     postUpdated: (state, action: PayloadAction<PostUpdated>) => {
+//       const post = state.posts.find(p => action.payload.id === p.id)
+
+//       if (post)
+//         Object.assign(post, action.payload)
+//     },
+//     reactionAdded: (state, action: PayloadAction<{ postId: string, reaction: ReactionName }>) => {
+//       const { postId, reaction } = action.payload;
+//       const post = state.posts.find(p => p.id === postId);
+
+//       if (post) {
+//         post.reactions[reaction]++;
+//       }
+//     }
+//   },
+//   extraReducers(builder) {
+//     builder
+//       .addCase(userLoggedOut, (state) => {
+//         return initialState
+//       })
+//       .addCase(fetchPosts.fulfilled, (state, action) => {
+//         state.status = 'succeeded';
+//         state.posts.push(...action.payload)
+//       })
+//       .addCase(fetchPosts.pending, (state) => {
+//         state.status = 'pending';
+//       })
+//       .addCase(fetchPosts.rejected, (state, action) => {
+//         state.status = 'failed';
+//         state.error = action.error.message ?? 'unknown error';
+//       })
+//   },
+// })
+
+export const createAppSlice = buildCreateSlice({
+  creators: { asyncThunk: asyncThunkCreator }
+});
+
+const postSlice = createAppSlice({
   initialState,
-  reducers: {
-    addPost: {
-      // the only two attributes are reducer and prepare
-      reducer: (state, action: PayloadAction<Post>) => {
-      state.posts.push(action.payload);
-      },
-      prepare(title: string, content: string, userId: string) {
-        return {
-          payload: {
-            title,
-            content,
-            id: nanoid(),
-            user: userId,
-            date: new Date().toISOString(),
-            reactions: {...reactions},
-          },
-          // meta
-          // error
-          // this two can also be added.
+  name: 'post',
+  reducers: (create) => {
+    return {
+      addPost: create.preparedReducer(
+        (title: string, content: string, userId: string) => {
+          return {
+            payload: {
+              id: nanoid(),
+              date: new Date().toISOString(),
+              title,
+              content,
+              user: userId,
+              reactions: {...reactions},
+            }
+          }
+        },
+        (state, action) => {
+          state.posts.push(action.payload)
         }
-      },
-    },
-    // use names in past tense
-    postUpdated: (state, action: PayloadAction<PostUpdated>) => {
-      const post = state.posts.find(p => action.payload.id === p.id)
+      ),
+      postUpdated: create.reducer<PostUpdated>((state, action) => {
+        const { id, title, content } = action.payload;
+        const post = state.posts.find(p => p.id === id);
 
-      if (post)
-        Object.assign(post, action.payload)
-    },
-    reactionAdded: (state, action: PayloadAction<{ postId: string, reaction: ReactionName }>) => {
-      const { postId, reaction } = action.payload;
-      const post = state.posts.find(p => p.id === postId);
+        if (post)
+          Object.assign(post, { title, content });
+      }),
+      reactionAdded: create.reducer<{ postId: string; reaction: ReactionName }>((
+        state, action
+      ) => {
+        const { postId, reaction } = action.payload
+        const post = state.posts.find(p => p.id === postId)
 
-      if (post) {
-        post.reactions[reaction]++;
-      }
+        if (post)
+          post.reactions[reaction]++;
+      }),
+      fetchPosts: create.asyncThunk(
+        async () => {
+          const res = await client.get<Post[]>('/fakeApi/posts');
+          return res.data;
+        },
+        {
+          options: {
+            condition(arg, thunkApi) {
+              const { posts } = thunkApi.getState() as RootState;
+
+              if (posts.status !== 'idle')
+                return false;
+            }
+          },
+          pending(state, action) {
+            state.status = 'pending';
+          },
+          fulfilled(state, action) {
+            state.status = 'succeeded';
+            state.posts.push(...action.payload)
+          },
+          rejected(state, action) {
+            state.status = 'failed';
+            state.error = action.error.message ?? 'error unknown';
+          }
+        }
+      ),
     }
   },
   extraReducers(builder) {
-    builder
-      .addCase(userLoggedOut, (state) => {
-        return initialState
-      })
-      .addCase(fetchPosts.fulfilled, (state, action) => {
-        state.status = 'succeeded';
-        state.posts.push(...action.payload)
-      })
-      .addCase(fetchPosts.pending, (state) => {
-        state.status = 'pending';
-      })
-      .addCase(fetchPosts.rejected, (state, action) => {
-        state.status = 'failed';
-        state.error = action.error.message ?? 'unknown error';
-      })
-  },
+    builder.addCase(userLoggedOut, (state) => {
+      return initialState;
+    })
+  }
 })
 
 export default postSlice.reducer;
@@ -127,4 +207,4 @@ export const selectAPost = (id: string | undefined) => (state: RootState) => sta
 export const selectPostsStatus = (state: RootState) => state.posts.status;
 export const selectPostsError = (state: RootState) => state.posts.error;
 
-export const { addPost, postUpdated, reactionAdded } = postSlice.actions;
+export const { addPost, postUpdated, reactionAdded, fetchPosts } = postSlice.actions;
