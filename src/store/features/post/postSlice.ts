@@ -20,7 +20,7 @@ export interface Post {
   }
 }
 
-type PostUpdated = Omit<Post, 'user'>
+type PostUpdated = Pick<Post, 'title' | 'content' | 'id'>
 
 const reactions = {
   thumbsUp: 0,
