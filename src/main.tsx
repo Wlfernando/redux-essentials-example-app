@@ -10,11 +10,14 @@ import './index.css'
 
 import { Provider } from 'react-redux';
 import store from './store';
+import { fetchUsers } from './store/features/users/usersSlice';
 
 // Wrap app rendering so we can wait for the mock API to initialize
 async function start() {
   // Start our mock API server
   await worker.start({ onUnhandledRequest: 'bypass' })
+
+  store.dispatch(fetchUsers())
 
   const root = createRoot(document.getElementById('root')!)
 
