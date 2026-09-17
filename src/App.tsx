@@ -7,6 +7,7 @@ import SinglePostPage from './store/features/post/SinglePostPage';
 import EditPostForm from './store/features/post/EditPostForm';
 import LoginPage from './store/features/auth/LoginPage';
 import ProtectedRoute from './store/features/auth/ProtectedRoute';
+import UsersList from './store/features/users/UsersList';
 
 function App() {
   return (
@@ -38,6 +39,13 @@ function App() {
                   <Route
                     path='/editPost/:postId'
                     element={<EditPostForm />}
+                  />
+                  <Route
+                    path='/users'
+                    element={<UsersList />}
+                  />
+                  <Route
+                    path='/users/:userId'
                   />
                 </Routes>
               </ProtectedRoute>
