@@ -1,5 +1,5 @@
 import { RootState } from "@/store";
-import { asyncThunkCreator, buildCreateSlice, createAsyncThunk, createSlice, nanoid, PayloadAction } from "@reduxjs/toolkit";
+import { asyncThunkCreator, buildCreateSlice } from "@reduxjs/toolkit";
 import { sub } from "date-fns";
 import { id } from "date-fns/locale";
 import { userLoggedOut } from "../auth/authSlice";
@@ -21,6 +21,7 @@ export interface Post {
 }
 
 type PostUpdated = Pick<Post, 'title' | 'content' | 'id'>
+type NewPost = Pick<Post, 'title' | 'content' | 'user'>
 
 const reactions = {
   thumbsUp: 0,
@@ -131,21 +132,36 @@ const postSlice = createAppSlice({
   name: 'post',
   reducers: (create) => {
     return {
-      addPost: create.preparedReducer(
-        (title: string, content: string, userId: string) => {
-          return {
-            payload: {
-              id: nanoid(),
-              date: new Date().toISOString(),
-              title,
-              content,
-              user: userId,
-              reactions: {...reactions},
-            }
+      // addPost: create.preparedReducer(
+      //   (title: string, content: string, userId: string) => {
+      //     return {
+      //       payload: {
+      //         id: nanoid(),
+      //         date: new Date().toISOString(),
+      //         title,
+      //         content,
+      //         user: userId,
+      //         reactions: {...reactions},
+      //       }
+      //     }
+      //   },
+      //   (state, action) => {
+      //     state.posts.push(action.payload)
+      //   }
+      // ),
+      addNewPost: create.asyncThunk(
+        async (initialPost: NewPost) => {
+          const res = await client.post<Post>('/fakeApi/posts', initialPost);
+          return res.data;
+        }, {
+          fulfilled(state, action) {
+            state.status = 'succeeded';
+            state.posts.push(action.payload);
+          },
+          rejected(state, action) {
+            state.status = 'failed';
+            state.error = action.error.message ?? 'unknown error';
           }
-        },
-        (state, action) => {
-          state.posts.push(action.payload)
         }
       ),
       postUpdated: create.reducer<PostUpdated>((state, action) => {
@@ -207,4 +223,4 @@ export const selectAPost = (id: string | undefined) => (state: RootState) => sta
 export const selectPostsStatus = (state: RootState) => state.posts.status;
 export const selectPostsError = (state: RootState) => state.posts.error;
 
-export const { addPost, postUpdated, reactionAdded, fetchPosts } = postSlice.actions;
+export const { addNewPost, postUpdated, reactionAdded, fetchPosts } = postSlice.actions;

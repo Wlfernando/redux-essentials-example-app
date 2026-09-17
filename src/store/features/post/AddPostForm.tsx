@@ -1,4 +1,4 @@
-import { addPost, Post } from "@/store/features/post/postSlice";
+import { addNewPost, Post } from "@/store/features/post/postSlice";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { selectCurrentUser } from "../users/usersSlice";
 
@@ -16,10 +16,10 @@ export default function AddPostForm() {
     const post: Pick<Post, 'title' | 'content' | 'user'> = {
         title: form.get(POST_TITLE) as string, 
         content: form.get(POST_CONTENT) as string,
-        user: currentUser?.name as string,
+        user: currentUser?.id as string,
       }
 
-    dispatch(addPost(post.title, post.content, post.user))
+    dispatch(addNewPost(post))
   }
 
   return <>
