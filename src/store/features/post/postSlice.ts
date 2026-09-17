@@ -222,5 +222,6 @@ export const selectPost = (state: RootState) => state.posts.posts;
 export const selectAPost = (id: string | undefined) => (state: RootState) => state.posts.posts.find(post => post.id === id)
 export const selectPostsStatus = (state: RootState) => state.posts.status;
 export const selectPostsError = (state: RootState) => state.posts.error;
+export const selectPostsByUser = (user: string) => (state: RootState) => state.posts.posts.filter(p => p.user === user)
 
 export const { addNewPost, postUpdated, reactionAdded, fetchPosts } = postSlice.actions;

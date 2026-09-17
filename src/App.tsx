@@ -8,6 +8,7 @@ import EditPostForm from './store/features/post/EditPostForm';
 import LoginPage from './store/features/auth/LoginPage';
 import ProtectedRoute from './store/features/auth/ProtectedRoute';
 import UsersList from './store/features/users/UsersList';
+import UserPage from './store/features/users/UserPage';
 
 function App() {
   return (
@@ -46,6 +47,7 @@ function App() {
                   />
                   <Route
                     path='/users/:userId'
+                    element={<UserPage />}
                   />
                 </Routes>
               </ProtectedRoute>
