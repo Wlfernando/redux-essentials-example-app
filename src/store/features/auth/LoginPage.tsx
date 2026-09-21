@@ -16,12 +16,12 @@ export default function LoginPage() {
   const users = useAppSelector(selectAllUsers);
   const nav = useNavigate();
 
-  const onSubmit = (e: React.FormEvent<LoginPageFormElements>) => {
+  const onSubmit = async (e: React.FormEvent<LoginPageFormElements>) => {
     e.preventDefault();
 
     const userName = e.currentTarget.elements.username.value;
 
-    dispatch(userLoggedIn(userName));
+    await dispatch(userLoggedIn(userName));
     nav('/posts');
   }
 

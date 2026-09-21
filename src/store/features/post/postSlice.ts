@@ -210,7 +210,7 @@ const postSlice = createAppSlice({
     }
   },
   extraReducers(builder) {
-    builder.addCase(userLoggedOut, (state) => {
+    builder.addCase(userLoggedOut.fulfilled, (state) => {
       return initialState;
     })
   }

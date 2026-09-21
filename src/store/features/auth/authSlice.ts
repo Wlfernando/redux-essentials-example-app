@@ -1,5 +1,7 @@
+import { client } from "@/api/client";
 import { RootState } from "@/store";
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { asyncThunkCreator, PayloadAction } from "@reduxjs/toolkit";
+import { buildCreateSlice } from "@reduxjs/toolkit";
 
 interface AuthState {
   userName: string | null;
@@ -9,17 +11,33 @@ const initialState: AuthState = {
   userName: null,
 };
 
-const authSlice = createSlice({
+const createAppSlice = buildCreateSlice({
+  creators: { asyncThunk: asyncThunkCreator },
+})
+
+const authSlice = createAppSlice({
   initialState,
   name: 'auth',
-  reducers: {
-    userLoggedIn(state, action: PayloadAction<string>) {
-      state.userName = action.payload;
-    },
-    userLoggedOut(state) {
-      state.userName = null;
-    },
-  },
+  reducers: (create) => ({
+    userLoggedIn: create.asyncThunk(
+      async (username: string) => {
+        await client.post('/fakeApi/login', { username })
+        return username;
+      }, {
+        fulfilled(state, action) {
+          state.userName = action.payload;
+        },
+      }
+    ),
+    userLoggedOut: create.asyncThunk(
+      async () => {
+      await client.post('/fakeApi/logout', {})
+    }, {
+      fulfilled(state) {
+        state.userName = null;
+      },
+    }),
+  }),
 })
 
 export default authSlice.reducer;
