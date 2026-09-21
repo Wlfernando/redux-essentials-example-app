@@ -1,9 +1,7 @@
 import { RootState } from "@/store";
-import { asyncThunkCreator, buildCreateSlice } from "@reduxjs/toolkit";
-import { sub } from "date-fns";
-import { id } from "date-fns/locale";
 import { userLoggedOut } from "../auth/authSlice";
 import { client } from "@/api/client";
+import { createAppSlice } from "@/store/hooks";
 
 export interface Post {
   id: string;
@@ -122,10 +120,6 @@ const initialState: PostState = {
 //       })
 //   },
 // })
-
-export const createAppSlice = buildCreateSlice({
-  creators: { asyncThunk: asyncThunkCreator }
-});
 
 const postSlice = createAppSlice({
   initialState,

@@ -1,7 +1,6 @@
 import { client } from "@/api/client";
 import { RootState } from "@/store";
-import { asyncThunkCreator, PayloadAction } from "@reduxjs/toolkit";
-import { buildCreateSlice } from "@reduxjs/toolkit";
+import { createAppSlice } from "@/store/hooks";
 
 interface AuthState {
   userName: string | null;
@@ -10,10 +9,6 @@ interface AuthState {
 const initialState: AuthState = {
   userName: null,
 };
-
-const createAppSlice = buildCreateSlice({
-  creators: { asyncThunk: asyncThunkCreator },
-})
 
 const authSlice = createAppSlice({
   initialState,
