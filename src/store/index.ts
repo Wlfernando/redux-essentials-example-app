@@ -3,6 +3,7 @@ import { counterReducer } from './counter'
 import postReducer from './features/post/postSlice'
 import usersReducer from './features/users/usersSlice'
 import authReducer from './features/auth/authSlice'
+import notificationsReducer from './features/notifications/notificationsSlice'
 
 const store = configureStore({
   reducer: {
@@ -10,6 +11,7 @@ const store = configureStore({
     posts: postReducer,
     users: usersReducer,
     auth: authReducer,
+    notifications: notificationsReducer,
   },
 });
 
