@@ -4,6 +4,7 @@ import React from 'react'
 import { Link } from 'react-router-dom';
 import { UserIcon } from './UserIcon';
 import { userLoggedOut } from '@/store/features/auth/authSlice';
+import { fetchNotifications } from '@/store/features/notifications/notificationsSlice';
 
 export const Navbar = () => {
   const dispatch = useAppDispatch();
@@ -18,11 +19,19 @@ export const Navbar = () => {
       dispatch(userLoggedOut())
     };
 
+    const fetchNewNotifications = () => {
+      dispatch(fetchNotifications())
+    }
+
     navContent = (
       <div className="navContent">
         <div className="navLinks">
           <Link to="/posts">Posts</Link>
           <Link to="/users">Users</Link>
+          <Link to="/notifications">Notifications</Link>
+          <button type="button" className="button small" onClick={fetchNewNotifications} >
+            Refresh Notifications
+          </button>
         </div>
         <div className="userDetails">
           <UserIcon size={32} />

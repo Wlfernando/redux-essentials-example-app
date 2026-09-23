@@ -38,4 +38,6 @@ const notificationSlice = createAppSlice({
 
 export default notificationSlice.reducer;
 
+export const { fetchNotifications } = notificationSlice.actions;
+
 export const selectAllNotifications = (state: RootState) => state.notifications;

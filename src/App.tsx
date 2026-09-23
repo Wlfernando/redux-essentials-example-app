@@ -9,6 +9,7 @@ import LoginPage from './store/features/auth/LoginPage';
 import ProtectedRoute from './store/features/auth/ProtectedRoute';
 import UsersList from './store/features/users/UsersList';
 import UserPage from './store/features/users/UserPage';
+import NotificationList from './store/features/notifications/notificationList';
 
 function App() {
   return (
@@ -48,6 +49,10 @@ function App() {
                   <Route
                     path='/users/:userId'
                     element={<UserPage />}
+                  />
+                  <Route
+                    path='/notifications'
+                    element={<NotificationList />}
                   />
                 </Routes>
               </ProtectedRoute>
