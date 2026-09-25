@@ -2,6 +2,7 @@ import { RootState } from "@/store";
 import { userLoggedOut } from "../auth/authSlice";
 import { client } from "@/api/client";
 import { createAppSlice } from "@/store/hooks";
+import { createSelector } from "@reduxjs/toolkit";
 
 export interface Post {
   id: string;
@@ -216,6 +217,14 @@ export const selectPost = (state: RootState) => state.posts.posts;
 export const selectAPost = (id: string | undefined) => (state: RootState) => state.posts.posts.find(post => post.id === id)
 export const selectPostsStatus = (state: RootState) => state.posts.status;
 export const selectPostsError = (state: RootState) => state.posts.error;
-export const selectPostsByUser = (user: string) => (state: RootState) => state.posts.posts.filter(p => p.user === user)
+
+export const memoizedPostsByUser = createSelector([
+  selectPost,
+  (state: RootState, userId: string) => userId,
+],
+  (posts, userId) => posts.filter(post => post.user === userId)
+);
+
+export const selectPostsByUser = (userId: string) => (state: RootState) => memoizedPostsByUser(state, userId);
 
 export const { addNewPost, postUpdated, reactionAdded, fetchPosts } = postSlice.actions;
